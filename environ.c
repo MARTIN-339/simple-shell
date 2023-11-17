@@ -1,90 +1,92 @@
 #include "shell.h"
 
 /**
- * _env - function that prints the current working directory
- * @noti: structure
- * Return: Always 0 (Success)
-
+ * _myenv - prints the current environment
+ * @info: Structure containing potential arguments. Used to maintain
+ *          constant function prototype.
+ * Return: Always 0
  */
-int _env(info_t *noti)
+int _myenv(info_t *info)
 {
-	_lstrprnt(noti->env);
-
+	print_list_str(info->env);
 	return (0);
 }
 
 /**
- * _gt_env - takes the value of the environment variable
- * @noti: structure
- * @idn: variable's identity
+ * _getenv - gets the value of an environ variable
+ * @info: Structure containing potential arguments. Used to maintain
+ * @name: env var name
  *
- * Return: variable's value
+ * Return: the value
  */
-char *_gt_env(info_t *noti, const char *idn)
+char *_getenv(info_t *info, const char *name)
 {
-	char *ptr;
-	list_t *n = noti->env;
+	list_t *node = info->env;
+	char *p;
 
-	while (n)
+	while (node)
 	{
-		ptr = _wtstr(n->str, idn);
-		if (ptr && *ptr)
-			return (ptr);
-		n = n->next;
+		p = starts_with(node->str, name);
+		if (p && *p)
+			return (p);
+		node = node->next;
 	}
 	return (NULL);
 }
 
 /**
- * _setenv - changes an env variable or makes a new one
- * @noti: structure
- *  Return: Always 0 (Success)
+ * _mysetenv - Initialize a new environment variable,
+ *             or modify an existing one
+ * @info: Structure containing potential arguments. Used to maintain
+ *        constant function prototype.
+ *  Return: Always 0
  */
-int _setenv(info_t *noti)
+int _mysetenv(info_t *info)
 {
-	if (noti->argc != 3)
+	if (info->argc != 3)
 	{
-		_errp("Incorrect number of arguements\n");
+		_eputs("Incorrect number of arguements\n");
 		return (1);
 	}
-	if (_senv(noti, noti->argv[1], noti->argv[2]))
+	if (_setenv(info, info->argv[1], info->argv[2]))
 		return (0);
 	return (1);
 }
 
 /**
- * _unsetenv - deletes a variable
- * @noti: structure
- *  Return: Always 0 (Success)
+ * _myunsetenv - Remove an environment variable
+ * @info: Structure containing potential arguments. Used to maintain
+ *        constant function prototype.
+ *  Return: Always 0
  */
-int _unsetenv(info_t *noti)
+int _myunsetenv(info_t *info)
 {
-	int index;
+	int i;
 
-	if (noti->argc == 1)
+	if (info->argc == 1)
 	{
-		_errp("Too few arguements.\n");
+		_eputs("Too few arguements.\n");
 		return (1);
 	}
-	for (index = 1; index <= noti->argc; index++)
-		_usenv(noti, noti->argv[index]);
+	for (i = 1; i <= info->argc; i++)
+		_unsetenv(info, info->argv[i]);
 
 	return (0);
 }
 
 /**
- * _envlt - fills the linked list of the env
- * @noti: Structure
- * Return: Always 0 (Success)
+ * populate_env_list - populates env linked list
+ * @info: Structure containing potential arguments. Used to maintain
+ *          constant function prototype.
+ * Return: Always 0
  */
-int _envlt(info_t *noti)
+int populate_env_list(info_t *info)
 {
-	size_t index;
-	list_t *n = NULL;
+	list_t *node = NULL;
+	size_t i;
 
-	for (index = 0; environ[index]; index++)
-		_down_ad(&n, environ[index], 0);
-	noti->env = n;
-
+	for (i = 0; environ[i]; i++)
+		add_node_end(&node, environ[i], 0);
+	info->env = node;
 	return (0);
 }

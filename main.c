@@ -1,47 +1,44 @@
 #include "shell.h"
 
 /**
- * main - the starting line
- * @cntarg: counts of argument passed
- * @vctarg: vector of argument
+ * main - entry point
+ * @ac: arg count
+ * @av: arg vector
  *
- * Return: 1 (Error) or 0 (Success)
+ * Return: 0 on success, 1 on error
  */
-int main(int cntarg, char **vctarg)
+int main(int ac, char **av)
 {
-	int xc;
-	info_t noti[] = { NOTI_INIT };
+	info_t info[] = { INFO_INIT };
+	int fd = 2;
 
-	xc = 2;
 	asm ("mov %1, %0\n\t"
 		"add $3, %0"
-		: "=r" (xc)
-		: "r" (xc));
+		: "=r" (fd)
+		: "r" (fd));
 
-	if (cntarg == 2)
+	if (ac == 2)
 	{
-		xc = open(vctarg[1], O_RDONLY);
-		if (xc == -1)
+		fd = open(av[1], O_RDONLY);
+		if (fd == -1)
 		{
-			if (errno == ENOENT)
-			{
-				_errp(vctarg[0]);
-				_errp(": 0: Can't open ");
-				_errp(vctarg[1]);
-				_errptch('\n');
-				_errptch(FLS_BFR);
-				exit(127);
-			}
 			if (errno == EACCES)
 				exit(126);
-
+			if (errno == ENOENT)
+			{
+				_eputs(av[0]);
+				_eputs(": 0: Can't open ");
+				_eputs(av[1]);
+				_eputchar('\n');
+				_eputchar(BUF_FLUSH);
+				exit(127);
+			}
 			return (EXIT_FAILURE);
 		}
-		noti->readfd = xc;
+		info->readfd = fd;
 	}
-	_envlt(noti);
-	_thrpast(noti);
-	_mnshl(noti, vctarg);
-
+	populate_env_list(info);
+	read_history(info);
+	hsh(info, av);
 	return (EXIT_SUCCESS);
 }
