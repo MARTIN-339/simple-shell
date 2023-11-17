@@ -1,4 +1,4 @@
-ifndef HEADER_FILE_SHELL
+#ifndef HEADER_FILE_SHELL
 #define HEADER_FILE_SHELL
 
 /******************** Standard libraries **********************/
@@ -105,7 +105,7 @@ typedef struct builtin
 /*********************** Prototypes for shell_loop.c **************/
 int _bltnfd(info_t *);
 void _fkexc(info_t *);
-int _mnshl(info_t *, char **);
+int _mnshl(info_t*noti, char **arg_v);
 void _fdexc(info_t *);
 
 /*********************** Prototyoes for parser.c ******************/

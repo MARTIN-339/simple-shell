@@ -5,7 +5,7 @@
  * @noti: the container
  * @arg_v: arg vtr gotten from the main function
  *
- * Return: 0 (Success), 1 (failure) / code for failuer
+ * Return: 0 (Success), 1 (failure)
  */
 int _mnshl(info_t *noti, char **arg_v)
 {
